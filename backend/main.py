@@ -26,12 +26,13 @@ app.add_middleware(
 )
 
 # Connect to MongoDB
+uri = os.getenv("MONGO_URI")
 try:
-    client = MongoClient("mongodb+srv://admin:01122003@cluster0.atbocxy.mongodb.net/")
+    client = MongoClient(uri)
     db = client["main"]
     db_tweets = db["tweets"]
     db_summaries = db["summaries"]
-    print("Connected to MongoDB")
+    print("Connected to MongoDB: ", uri)
 except Exception as e:
     print(f"An error occurred: {e}")
 
@@ -52,19 +53,16 @@ def capitalize_product_name(product: str) -> str:
     
 def get_existing_sentiments(product: str) -> Optional[SentimentSummary]:
     # Case-insensitive search for product in summaries
-    cursor = db_summaries.find({"product": {"$regex": f"^{product}$", "$options": "i"}})
+    document = db_summaries.find_one({"product": {"$regex": f"^{product}$", "$options": "i"}})
     
-    # Retrieve the first matching document
-    existing_summary = cursor.next() if cursor.count() > 0 else None
-    
-    if existing_summary:
+    if document:
         return SentimentSummary(
-            product=existing_summary["product"],
-            total=existing_summary["total"],
-            positive=existing_summary["positive"],
-            neutral=existing_summary["neutral"],
-            negative=existing_summary["negative"],
-            irrelevant=existing_summary["irrelevant"],
+            product=document["product"],
+            total=document["total"],
+            positive=document["positive"],
+            neutral=document["neutral"],
+            negative=document["negative"],
+            irrelevant=document["irrelevant"],
         )
     return None
 
@@ -95,4 +93,19 @@ def get_new_sentiments(product: str) -> Optional[SentimentSummary]:
 @app.get("/sentiment-summary", response_model=SentimentSummary)
 def get_sentiment_summary(product: str = Query(..., min_length=1)):
     # Find existing sentiments in the db_summary, if not found, get new sentiments from db_tweets
-    pass
+    existing_summary = get_existing_sentiments(product)
+    if existing_summary:
+        return existing_summary
+    else:
+        new_summary = get_new_sentiments(product)
+        if new_summary:
+            return new_summary
+        else:
+            return SentimentSummary(
+                product=capitalize_product_name(product),
+                total=0,
+                positive=0,
+                neutral=0,
+                negative=0,
+                irrelevant=0,
+            )
