@@ -1,4 +1,4 @@
-import SentimentDashboard from './SentimentDashboard';
+import SentimentDashboard from './components/SentimentDashboard';
 
 function App() {
   return (
