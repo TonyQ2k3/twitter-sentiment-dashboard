@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pymongo import MongoClient
 from typing import Optional
 from collections import Counter
@@ -30,7 +31,7 @@ uri = os.getenv("MONGO_URI")
 try:
     client = MongoClient(uri)
     db = client["main"]
-    db_tweets = db["tweets"]
+    db_reddits = db["reddits"]
     db_summaries = db["summaries"]
     print("Connected to MongoDB: ", uri)
 except Exception as e:
@@ -62,15 +63,14 @@ def get_existing_sentiments(product: str) -> Optional[SentimentSummary]:
             positive=document["positive"],
             neutral=document["neutral"],
             negative=document["negative"],
-            irrelevant=document["irrelevant"],
         )
     return None
 
 
 def get_new_sentiments(product: str) -> Optional[SentimentSummary]:
     # Case-insensitive search for product
-    cursor = db_tweets.find({"product": {"$regex": f"^{product}$", "$options": "i"}})
-    sentiments = [doc.get("prediction") for doc in cursor if doc.get("prediction") in ["Positive", "Neutral", "Negative", "Irrelevant"]]
+    cursor = db_reddits.find({"product": {"$regex": f"^{product}$", "$options": "i"}})
+    sentiments = [doc.get("prediction") for doc in cursor if doc.get("prediction") in ["Positive", "Neutral", "Negative"]]
     counts = Counter(sentiments)
     total = sum(counts.values())
     
@@ -82,7 +82,6 @@ def get_new_sentiments(product: str) -> Optional[SentimentSummary]:
         positive=counts.get("Positive", 0),
         neutral=counts.get("Neutral", 0),
         negative=counts.get("Negative", 0),
-        irrelevant=counts.get("Irrelevant", 0),
     )
     # Insert summary into MongoDB for future query
     db_summaries.insert_one(summary.dict())
@@ -92,7 +91,7 @@ def get_new_sentiments(product: str) -> Optional[SentimentSummary]:
 
 @app.get("/sentiment-summary", response_model=SentimentSummary)
 def get_sentiment_summary(product: str = Query(..., min_length=1)):
-    # Find existing sentiments in the db_summary, if not found, get new sentiments from db_tweets
+    # Find existing sentiments in the db_summary, if not found, get new sentiments from db_reddits
     existing_summary = get_existing_sentiments(product)
     if existing_summary:
         return existing_summary
@@ -109,3 +108,14 @@ def get_sentiment_summary(product: str = Query(..., min_length=1)):
                 negative=0,
                 irrelevant=0,
             )
+            
+            
+@app.get("/top-comments")
+def get_top_comments(product: str = Query(..., min_length=1), limit: int = 10):
+    cursor = db_reddits.find(
+        {"product": {"$regex": f"^{product}$", "$options": "i"}},
+        {"_id": 0, "original": 1, "author": 1, "score": 1, "created": 1, "prediction": 1}
+    ).sort("score", -1).limit(limit)
+    
+    comments = list(cursor)
+    return JSONResponse(content=comments)
