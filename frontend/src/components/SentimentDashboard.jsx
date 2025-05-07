@@ -1,3 +1,4 @@
+import TopComments from "./TopComments";
 import { useState } from "react";
 import { Pie } from "react-chartjs-2";
 import {
@@ -22,6 +23,8 @@ export default function SentimentDashboard() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [topComments, setTopComments] = useState([]);
+
 
   const handleSearch = async () => {
     if (!product) return;
@@ -33,6 +36,12 @@ export default function SentimentDashboard() {
         throw new Error("Failed to fetch data");
       const result = await res.json();
       setData(result);
+
+      const resComments = await fetch(`/api/top-comments?product=${encodeURIComponent(product)}`);
+      if (!resComments.ok) throw new Error("Failed to fetch comments");
+      const commentData = await resComments.json();
+      setTopComments(commentData);
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -111,6 +120,11 @@ export default function SentimentDashboard() {
           <div className="result-card">
             <h3 className="text-md font-semibold mb-2">Sentiment Distribution</h3>
             <Pie data={chartData} />
+          </div>
+
+          {/* Top Comments Section */}
+          <div className="col-span-2">
+            <TopComments comments={topComments} />
           </div>
         </div>
       </main>
