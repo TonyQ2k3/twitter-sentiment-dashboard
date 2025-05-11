@@ -1,8 +1,9 @@
 # Sentiment visualization in brand monitoring using ReactJS and FastAPI
-![ReactJS](https://img.shields.io/badge/ReactJS-gray?style=flat&logo=react)
-![FastAPI](https://img.shields.io/badge/FastAPI-gray?style=flat&logo=fastapi)
-![Tailwind](https://img.shields.io/badge/Tailwind-gray?style=flat&logo=tailwindcss)
-![MongoDB](https://img.shields.io/badge/MongoDB-gray?style=flat&logo=mongodb)
+![ReactJS](https://img.shields.io/badge/ReactJS-61DAFB?style=for-the-badge&logo=react&logoColor=000000)
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=FFFFFF)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=FFFFFF)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=FFFFFF)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=FFFFFF)
 
 ## 👨‍💻 About
 This is the repo for the dashboard web app which visualizes sentiment analysis results.
