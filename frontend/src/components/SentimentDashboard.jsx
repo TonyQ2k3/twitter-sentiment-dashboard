@@ -1,4 +1,3 @@
-import TopComments from "./TopComments";
 import { useState } from "react";
 import { Pie } from "react-chartjs-2";
 import {
@@ -7,6 +6,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import TopComments from "./TopComments";
+import WeeklySentimentChart from "./WeeklySentimentChart";
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -24,6 +26,7 @@ export default function SentimentDashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [topComments, setTopComments] = useState([]);
+  const [weeklyData, setWeeklyData] = useState([]);
 
 
   const handleSearch = async () => {
@@ -41,6 +44,11 @@ export default function SentimentDashboard() {
       if (!resComments.ok) throw new Error("Failed to fetch comments");
       const commentData = await resComments.json();
       setTopComments(commentData);
+
+      const resWeekly = await fetch(`/api/weekly-sentiment?product=${encodeURIComponent(product)}`);
+      if (!resWeekly.ok) throw new Error("Failed to fetch weekly data");
+      const weeklyData = await resWeekly.json();
+      setWeeklyData(weeklyData);
 
     } catch (err) {
       setError(err.message);
@@ -127,6 +135,9 @@ export default function SentimentDashboard() {
             <TopComments comments={topComments} />
           </div>
         </div>
+
+        {/* Weekly Sentiment Chart */}
+        {weeklyData.length > 0 && <WeeklySentimentChart data={weeklyData} />}
       </main>
     </div>
   </div>

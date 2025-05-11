@@ -6,7 +6,9 @@ from typing import Optional
 from collections import Counter
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from datetime import datetime
 import os
+from bson.son import SON
 
 try:
     print("Loading environment vars")
@@ -114,8 +116,65 @@ def get_sentiment_summary(product: str = Query(..., min_length=1)):
 def get_top_comments(product: str = Query(..., min_length=1), limit: int = 10):
     cursor = db_reddits.find(
         {"product": {"$regex": f"^{product}$", "$options": "i"}},
-        {"_id": 0, "original": 1, "author": 1, "score": 1, "created": 1, "prediction": 1}
+        {"_id": 0, "text": 1, "author": 1, "score": 1, "created": 1, "prediction": 1}
     ).sort("score", -1).limit(limit)
     
     comments = list(cursor)
     return JSONResponse(content=comments)
+
+
+
+@app.get("/weekly-sentiment")
+def get_weekly_sentiment(product: str = Query(..., min_length=1)):
+    pipeline = [
+        {"$match": {
+            "product": {"$regex": f"^{product}$", "$options": "i"},
+            "prediction": {"$in": ["Positive", "Neutral", "Negative"]},
+            "created": {"$type": "string"}
+        }},
+        {"$addFields": {
+            "created_date": {
+                "$dateFromString": {
+                    "dateString": "$created",
+                    "format": "%Y-%m-%d"
+                }
+            }
+        }},
+        {"$addFields": {
+            "week": {"$isoWeek": "$created_date"},
+            "year": {"$isoWeekYear": "$created_date"},
+            "month": {"$month": "$created_date"}
+        }},
+        {"$group": {
+            "_id": {
+                "year": "$year",
+                "month": "$month",
+                "week": "$week",
+                "prediction": "$prediction"
+            },
+            "count": {"$sum": 1}
+        }},
+        {"$group": {
+            "_id": {
+                "year": "$_id.year",
+                "month": "$_id.month",
+                "week": "$_id.week"
+            },
+            "counts": {
+                "$push": {
+                    "sentiment": "$_id.prediction",
+                    "count": "$count"
+                }
+            }
+        }},
+        {"$sort": SON([("_id.year", 1), ("_id.month", 1), ("_id.week", 1)])}
+    ]
+    results = db_reddits.aggregate(pipeline)
+    output = []
+    for item in results:
+        week_label = f"{item['_id']['year']}-{item['_id']['month']}-W{item['_id']['week']}"
+        data = {"week": week_label, "Positive": 0, "Neutral": 0, "Negative": 0}
+        for entry in item["counts"]:
+            data[entry["sentiment"]] = entry["count"]
+        output.append(data)
+    return JSONResponse(content=output)

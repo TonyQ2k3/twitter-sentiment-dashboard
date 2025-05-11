@@ -8,7 +8,7 @@ export default function TopComments({ comments }) {
         ) : (
           comments.map((comment, index) => (
             <div key={index} className="p-4 bg-white rounded-xl shadow">
-              <p className="text-sm italic text-gray-600 mb-1">"{comment.original}"</p>
+              <p className="text-sm italic text-gray-600 mb-1">"{comment.text}"</p>
               <div className="text-xs text-gray-500">
                 <span>By {comment.author}</span> | <span>{comment.score} upvotes</span>
               </div>
