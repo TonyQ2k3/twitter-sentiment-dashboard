@@ -8,7 +8,7 @@ import {
 } from "chart.js";
 import TopComments from "../components/TopComments";
 import WeeklySentimentChart from "../components/WeeklySentimentChart";
-import { getToken } from "../auth";
+import { getToken, authFetch } from "../auth";
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -26,17 +26,8 @@ export default function SentimentDashboard() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [topComments, setTopComments] = useState([
-    { text: "Love this product! It's amazing.", sentiment: "positive", source: "Twitter", date: "2023-06-01" },
-    { text: "Not sure if this is worth the money.", sentiment: "neutral", source: "Amazon Review", date: "2023-05-28" },
-    { text: "Disappointed with the quality.", sentiment: "negative", source: "Customer Support", date: "2023-05-25" }
-  ]);
-  const [weeklyData, setWeeklyData] = useState([
-    { week: "Week 1", Positive: 15, Neutral: 20, Negative: 5 },
-    { week: "Week 2", Positive: 12, Neutral: 18, Negative: 8 },
-    { week: "Week 3", Positive: 20, Neutral: 15, Negative: 3 },
-    { week: "Week 4", Positive: 18, Neutral: 22, Negative: 6 }
-  ]);
+  const [topComments, setTopComments] = useState([]);
+  const [weeklyData, setWeeklyData] = useState([]);
   const [activeTab, setActiveTab] = useState("sentiment");
 
   const token = getToken();
@@ -50,18 +41,18 @@ export default function SentimentDashboard() {
         "Authorization": `Bearer ${token}`
       };
 
-      const res = await fetch(`/api/sentiment/summary?product=${encodeURIComponent(product)}`, { headers });
+      const res = await authFetch(`/api/sentiment/summary?product=${encodeURIComponent(product)}`, { headers });
       if (!res.ok) 
         throw new Error("Failed to fetch data");
       const result = await res.json();
       setData(result);
 
-      const resComments = await fetch(`/api/sentiment/top-comments?product=${encodeURIComponent(product)}`, { headers });
+      const resComments = await authFetch(`/api/sentiment/top-comments?product=${encodeURIComponent(product)}`, { headers });
       if (!resComments.ok) throw new Error("Failed to fetch comments");
       const commentData = await resComments.json();
       setTopComments(commentData);
 
-      const resWeekly = await fetch(`/api/sentiment/weekly?product=${encodeURIComponent(product)}`, { headers });
+      const resWeekly = await authFetch(`/api/sentiment/weekly?product=${encodeURIComponent(product)}`, { headers });
       if (!resWeekly.ok) throw new Error("Failed to fetch weekly sentiment");
       const weekly = await resWeekly.json();
       setWeeklyData(weekly);
@@ -86,8 +77,7 @@ export default function SentimentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-    <div className="flex gap-6">
+    <div className="flex gap-6 bg-gray-100 p-6">
       {/* Sidebar */}
       <aside className="w-64 bg-white rounded-2xl shadow p-4">
         <h1 className="text-xl font-bold mb-6">BRANDITORING</h1>
@@ -109,8 +99,8 @@ export default function SentimentDashboard() {
         </nav>
       </aside>
 
-       {/* Main Panel */}
-      <main className="flex-1 space-y-6">
+      {/* Main Panel */}
+      <div className="flex-1 space-y-6">
         {/* Header - always visible regardless of tab */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h2 className="result-value">{data.product}</h2>
@@ -180,8 +170,7 @@ export default function SentimentDashboard() {
             <WeeklySentimentChart data={weeklyData} />
           </div>
         )}
-      </main>
+      </div>
     </div>
-  </div>
   );
 }

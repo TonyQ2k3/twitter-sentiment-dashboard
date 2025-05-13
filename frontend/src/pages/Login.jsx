@@ -1,4 +1,4 @@
-import { use, useState, useEffect } from "react";
+import { useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { setToken, isAuthenticated } from "../auth";
 
@@ -17,7 +17,8 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      if (!res.ok) throw new Error("Login failed");
+      if (!res.ok) 
+        throw new Error("Login failed");
       const data = await res.json();
       setToken(data.access_token);
       navigate("/");
@@ -26,11 +27,11 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
-    if (isAuthenticated()) {
-      navigate("/");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   if (isAuthenticated()) {
+  //     navigate("/");
+  //   }
+  // }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
