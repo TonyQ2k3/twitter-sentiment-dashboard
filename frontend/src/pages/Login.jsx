@@ -1,11 +1,12 @@
-import { useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { setToken, isAuthenticated } from "../auth";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,40 +28,44 @@ export default function Login() {
     }
   };
 
-  // useEffect(() => {
-  //   if (isAuthenticated()) {
-  //     navigate("/");
-  //   }
-  // }, [navigate]);
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate("/");
+    }
+  });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 pb-4 rounded shadow-md w-96">
-        <h2 className="text-xl text-center font-bold mb-4">Login</h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        <input
-          className="w-full mb-3 p-2 border rounded"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          className="w-full mb-4 p-2 border rounded"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-          Login
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)] dark:shadow-[0_20px_50px_rgba(0,_0,_0,_0.3)] w-96 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 hover:translate-y-[-5px]">
+        <h2 className="text-2xl text-center font-bold mb-6 text-gray-800 dark:text-white">Welcome Back</h2>
+        {error && <p className="text-red-500 text-sm mb-4 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">{error}</p>}
+        <div className="mb-5">
+          <input
+            className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 outline-none transition-all duration-200 text-base"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className="mb-6">
+          <input
+            className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 outline-none transition-all duration-200 text-base"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white py-3 px-4 rounded-lg font-medium shadow-md hover:shadow-lg transform transition-all duration-300 hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+          Sign In
         </button>
-        <p className="text-sm text-center mt-4">
+        <p className="text-sm text-center mt-6 text-gray-600 dark:text-gray-300">
           Don't have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:underline">
-            Register
+          <a href="/register" className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-200">
+            Register now
           </a>
         </p>
       </form>
-    </div>
+    </main>
   );
 }

@@ -48,16 +48,6 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-gray-100">
       {/* Header */}
-      {/* <div className="flex justify-between items-center p-4 bg-white shadow">
-        <span className="text-sm text-gray-700 font-medium">👤 Username: <span className="font-bold">{username}</span></span>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </div> */}
-      {/* Enhanced Header */}
         <header className="relative bg-white dark:bg-gray-800 shadow-md rounded-lg mb-2">
         {/* <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 h-1.5"></div> */}
         {/* Main header content */}
@@ -86,7 +76,7 @@ export default function Dashboard() {
                         </div>
                         <div className="flex flex-col items-start">
                             <span className="font-medium text-gray-900 dark:text-white">{username}</span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">Premium Account</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">User Account</span>
                         </div>
                         <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
@@ -144,7 +134,7 @@ export default function Dashboard() {
         </header>
 
       {/* Dashboard */}
-        <SentimentDashboard />
+      <SentimentDashboard />
     </main>
   );
 }
