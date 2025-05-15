@@ -110,7 +110,7 @@ export default function SentimentDashboard() {
           <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
           </svg>
-          Weekly Sentiment
+          Sentiment Trends
         </div>
       </button>
       <button 
@@ -220,7 +220,6 @@ export default function SentimentDashboard() {
     ) : (
       /* Weekly Sentiment Tab Content */
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Sentiment Trends</h3>
         <WeeklySentimentChart data={weeklyData} />
       </div>
     )}
