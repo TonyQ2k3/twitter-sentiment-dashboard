@@ -99,7 +99,7 @@ def get_weekly_sentiment(
     results = db_reddits.aggregate(pipeline)
     output = []
     for item in results:
-        week_label = f"{item['_id']['year']}-{item['_id']['month']}-W{item['_id']['week']}"
+        week_label = f"{item['_id']['year']}-{item['_id']['month']}-W{item['_id']['week']%4+1}"
         data = {"week": week_label, "Positive": 0, "Neutral": 0, "Negative": 0}
         for entry in item["counts"]:
             data[entry["sentiment"]] = entry["count"]

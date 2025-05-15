@@ -6,6 +6,7 @@ from datetime import timedelta
 
 router = APIRouter()
 
+# Register a new user
 @router.post("/register")
 def register(user: UserCreate):
     if db_users.find_one({"username": user.username}):
@@ -16,6 +17,7 @@ def register(user: UserCreate):
     })
     return {"msg": "User registered successfully"}
 
+# Login a user and return a JWT token
 @router.post("/login")
 def login(user: UserLogin):
     db_user = db_users.find_one({"username": user.username})
@@ -23,6 +25,11 @@ def login(user: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_access_token({"sub": user.username}, expires_delta=timedelta(minutes=60))
     return {"access_token": token, "token_type": "bearer"}
+
+# Logout a user (client must discard the token)
+@router.post("/logout")
+def logout(current_user: str = Depends(get_current_user)):
+    return {"msg": f"User '{current_user}' logged out (client must discard token)."}
 
 @router.get("/me")
 def read_users_me(current_user: str = Depends(get_current_user)):
