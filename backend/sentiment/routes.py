@@ -105,3 +105,60 @@ def get_weekly_sentiment(
             data[entry["sentiment"]] = entry["count"]
         output.append(data)
     return JSONResponse(content=output)
+
+
+@router.get("/monthly")
+def get_monthly_sentiment(
+    product: str = Query(..., min_length=1), 
+    current_user: str = Depends(get_current_user)
+):
+    pipeline = [
+        {"$match": {
+            "product": {"$regex": f"^{product}$", "$options": "i"},
+            "prediction": {"$in": ["Positive", "Neutral", "Negative"]},
+            "created": {"$type": "string"}
+        }},
+        {"$addFields": {
+            "created_date": {
+                "$dateFromString": {
+                    "dateString": "$created",
+                    "format": "%Y-%m-%d"
+                }
+            }
+        }},
+        {"$addFields": {
+            "year": {"$year": "$created_date"},
+            "month": {"$month": "$created_date"}
+        }},
+        {"$group": {
+            "_id": {
+                "year": "$year",
+                "month": "$month",
+                "prediction": "$prediction"
+            },
+            "count": {"$sum": 1}
+        }},
+        {"$group": {
+            "_id": {
+                "year": "$_id.year",
+                "month": "$_id.month"
+            },
+            "counts": {
+                "$push": {
+                    "sentiment": "$_id.prediction",
+                    "count": "$count"
+                }
+            }
+        }},
+        {"$sort": SON([("_id.year", 1), ("_id.month", 1)])}
+    ]
+
+    results = db_reddits.aggregate(pipeline)
+    output = []
+    for item in results:
+        month_label = f"{item['_id']['year']}-{item['_id']['month']:02}"
+        data = {"month": month_label, "Positive": 0, "Neutral": 0, "Negative": 0}
+        for entry in item["counts"]:
+            data[entry["sentiment"]] = entry["count"]
+        output.append(data)
+    return JSONResponse(content=output)
