@@ -2,7 +2,7 @@ export default function TopComments({ comments }) {
   return (
     <div className="result-card">
       <h3 className="text-md font-semibold mb-2">Top Comments</h3>
-      <div className="max-h-[400px] overflow-y-auto pr-2 space-y-4">
+      <div className="max-h-[300px] overflow-y-auto pr-2 space-y-4">
         {comments.length === 0 ? (
           <p>No comments found.</p>
         ) : (
