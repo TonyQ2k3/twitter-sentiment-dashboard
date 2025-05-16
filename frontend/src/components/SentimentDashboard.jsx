@@ -7,7 +7,7 @@ import {
   Legend,
 } from "chart.js";
 import TopComments from "../components/TopComments";
-import WeeklySentimentChart from "../components/WeeklySentimentChart";
+import SentimentTrendChart from "./SentimentTrendChart";
 import { getToken, authFetch } from "../auth";
 
 
@@ -28,6 +28,7 @@ export default function SentimentDashboard() {
   const [error, setError] = useState(null);
   const [topComments, setTopComments] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [activeTab, setActiveTab] = useState("sentiment");
 
   const token = getToken();
@@ -48,14 +49,22 @@ export default function SentimentDashboard() {
       setData(result);
 
       const resComments = await authFetch(`/api/sentiment/top-comments?product=${encodeURIComponent(product)}`, { headers });
-      if (!resComments.ok) throw new Error("Failed to fetch comments");
+      if (!resComments.ok) 
+        throw new Error("Failed to fetch comments");
       const commentData = await resComments.json();
       setTopComments(commentData);
 
       const resWeekly = await authFetch(`/api/sentiment/weekly?product=${encodeURIComponent(product)}`, { headers });
-      if (!resWeekly.ok) throw new Error("Failed to fetch weekly sentiment");
+      if (!resWeekly.ok) 
+        throw new Error("Failed to fetch weekly sentiment");
       const weekly = await resWeekly.json();
       setWeeklyData(weekly);
+
+      const resMonthly = await authFetch(`/api/sentiment/monthly?product=${encodeURIComponent(product)}`, { headers });
+      if (!resMonthly.ok) 
+        throw new Error("Failed to fetch weekly sentiment");
+      const monthly = await resMonthly.json();
+      setMonthlyData(monthly);
 
     } catch (err) {
       setError(err.message);
@@ -220,7 +229,7 @@ export default function SentimentDashboard() {
     ) : (
       /* Weekly Sentiment Tab Content */
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
-        <WeeklySentimentChart data={weeklyData} />
+        <SentimentTrendChart weeklyData={weeklyData} monthlyData={monthlyData} />
       </div>
     )}
   </div>
