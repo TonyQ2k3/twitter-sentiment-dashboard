@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authFetch, clearToken, isAuthenticated } from "../auth";
 import SentimentDashboard from "../components/SentimentDashboard";
+import {logo} from '../assets';
 
 export default function Dashboard() {
   const [username, setUsername] = useState("");
@@ -55,10 +56,8 @@ export default function Dashboard() {
                 {/* Left section: Brand/Logo */}
                 <div className="flex items-center mb-4 sm:mb-0">
                 <div className="flex items-center space-x-2">
-                    <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
-                    </svg>
-                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">BRANDITORING</span>
+                    <img src={logo} alt="Logo" className="w-10 h-10 transform transition-transform hover:scale-105" />
+                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">Social Scope</span>
                 </div>
                 </div>
                 

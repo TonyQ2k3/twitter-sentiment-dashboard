@@ -47,9 +47,7 @@ export default function Login() {
       <div className="flex items-center justify-center gap-3 mb-6">
         {/* Logo Image or Fallback Circle Logo */}
         <img src={logo} alt="" className="w-10 h-10" />
-        <h1 className="text-2xl font-extrabold text-gray-800 dark:text-white tracking-tight">
-          Social Scope
-        </h1>
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">Social Scope</h1>
       </div>
 
       {error && <p className="text-red-500 text-sm mb-4 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">{error}</p>}

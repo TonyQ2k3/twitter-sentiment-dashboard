@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "../auth";
+import { logo } from "../assets";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -30,7 +31,11 @@ export default function Register() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)] dark:shadow-[0_20px_50px_rgba(0,_0,_0,_0.3)] w-96 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 hover:translate-y-[-5px]">
-        <h2 className="text-2xl text-center font-bold mb-6 text-gray-800 dark:text-white">Create an account</h2>
+        <div className="flex items-center justify-center gap-3 mb-6">
+          {/* Logo Image or Fallback Circle Logo */}
+          <img src={logo} alt="" className="w-10 h-10" />
+          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">Create an account</h1>
+        </div>
         {error && <p className="text-red-500 text-sm mb-4 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">{error}</p>}
         <div className="mb-5">
           <input
