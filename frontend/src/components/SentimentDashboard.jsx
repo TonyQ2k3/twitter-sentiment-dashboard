@@ -17,7 +17,7 @@ export default function SentimentDashboard() {
   const [product, setProduct] = useState("");
   const [data, setData] = useState(
     {
-      "product": "Amazon",
+      "product": "Your Product",
       "total": 31,
       "positive": 8,
       "neutral": 17,
