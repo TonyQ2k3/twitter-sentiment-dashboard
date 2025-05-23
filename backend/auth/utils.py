@@ -33,11 +33,11 @@ def decode_access_token(token: str):
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = decode_access_token(token)
-    username = payload.get("sub")
-    if username is None:
+    email = payload.get("sub")
+    if email is None:
         raise HTTPException(status_code=401, detail="Invalid token payload")
     
-    user = db_users.find_one({"username": username})
+    user = db_users.find_one({"email": email})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

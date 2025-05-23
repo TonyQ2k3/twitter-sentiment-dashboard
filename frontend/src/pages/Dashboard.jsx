@@ -6,6 +6,7 @@ import {logo} from '../assets';
 
 export default function Dashboard() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("")
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Dashboard() {
         const res = await authFetch("/api/auth/me");
         const data = await res.json();
         setUsername(data.username);
+        setEmail(data.email);
         if (data.role == "enterprise") {
           setRole("Enterprise")
         }
@@ -93,7 +95,7 @@ export default function Dashboard() {
                         <div className={`${profileMenuOpen ? 'block' : 'hidden'} absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out z-10`}>
                             <div className="p-3 border-b border-gray-200 dark:border-gray-600">
                             <p className="text-sm text-gray-500 dark:text-gray-400">Signed in as</p>
-                            <p className="font-medium truncate dark:text-white">{username}</p>
+                            <p className="font-medium truncate dark:text-white">{email}</p>
                             </div>
                             <ul className="py-2">
                             <li>

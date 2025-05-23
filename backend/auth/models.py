@@ -2,12 +2,13 @@ from pydantic import BaseModel, Field, root_validator
 from typing import Literal, Union, Optional
 
 class UserBase(BaseModel):
+    email: str
     username: str
     password: str
     role: Literal["normal", "enterprise"] = "normal"
 
 class UserLogin(BaseModel):
-    username: str
+    email: str
     password: str
 
 class NormalUserCreate(UserBase):

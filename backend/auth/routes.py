@@ -9,10 +9,11 @@ router = APIRouter()
 # Register a new user
 @router.post("/register")
 def register(user: UserCreate = Body(...)):
-    if db_users.find_one({"username": user.username}):
-        raise HTTPException(status_code=400, detail="Username already registered")
+    if db_users.find_one({"email": user.email}):
+        raise HTTPException(status_code=400, detail="Email already registered")
 
     user_doc = {
+        "email": user.email,
         "username": user.username,
         "hashed_password": hash_password(user.password),
         "role": user.role
@@ -31,10 +32,10 @@ def register(user: UserCreate = Body(...)):
 # Login a user and return a JWT token
 @router.post("/login")
 def login(user: UserLogin):
-    db_user = db_users.find_one({"username": user.username})
+    db_user = db_users.find_one({"email": user.email})
     if not db_user or not verify_password(user.password, db_user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    token = create_access_token({"sub": user.username}, expires_delta=timedelta(minutes=60))
+    token = create_access_token({"sub": user.email}, expires_delta=timedelta(minutes=60))
     return {"access_token": token, "token_type": "bearer"}
 
 
@@ -42,6 +43,7 @@ def login(user: UserLogin):
 def read_users_me(current_user: dict = Depends(get_current_user)):
     result = {
         "username": current_user["username"],
+        "email": current_user["email"],
         "role": current_user.get("role", "normal")
     }
     if result["role"] == "enterprise":

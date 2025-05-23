@@ -4,6 +4,7 @@ import { setToken } from "../auth";
 import { logo } from "../assets";
 
 export default function Register() {
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
@@ -36,6 +37,7 @@ export default function Register() {
     
     try {
       const userData = { 
+        email,
         username, 
         password,
         role,
@@ -122,6 +124,15 @@ export default function Register() {
               </div>
             </label>
           </div>
+        </div>
+
+        <div className="mb-5">
+          <input
+            className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 outline-none transition-all duration-200 text-base"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         
         <div className="mb-5">
