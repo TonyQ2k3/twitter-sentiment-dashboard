@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Body
 from auth.models import UserCreate, UserLogin
 from auth.utils import hash_password, verify_password, create_access_token, get_current_user
 from database import db_users
@@ -8,14 +8,25 @@ router = APIRouter()
 
 # Register a new user
 @router.post("/register")
-def register(user: UserCreate):
+def register(user: UserCreate = Body(...)):
     if db_users.find_one({"username": user.username}):
         raise HTTPException(status_code=400, detail="Username already registered")
-    db_users.insert_one({
+
+    user_doc = {
         "username": user.username,
-        "hashed_password": hash_password(user.password)
-    })
-    return {"msg": "User registered successfully"}
+        "hashed_password": hash_password(user.password),
+        "role": user.role
+    }
+
+    if user.role == "enterprise":
+        user_doc.update({
+            "company_name": user.companyName,
+            "business_address": user.businessAddress,
+            "tax_id": user.taxId
+        })
+
+    db_users.insert_one(user_doc)
+    return {"msg": f"{user.role.capitalize()} user registered successfully"}
 
 # Login a user and return a JWT token
 @router.post("/login")
@@ -26,11 +37,17 @@ def login(user: UserLogin):
     token = create_access_token({"sub": user.username}, expires_delta=timedelta(minutes=60))
     return {"access_token": token, "token_type": "bearer"}
 
-# Logout a user (client must discard the token)
-@router.post("/logout")
-def logout(current_user: str = Depends(get_current_user)):
-    return {"msg": f"User '{current_user}' logged out (client must discard token)."}
 
 @router.get("/me")
-def read_users_me(current_user: str = Depends(get_current_user)):
-    return {"username": current_user}
+def read_users_me(current_user: dict = Depends(get_current_user)):
+    result = {
+        "username": current_user["username"],
+        "role": current_user.get("role", "normal")
+    }
+    if result["role"] == "enterprise":
+        result.update({
+            "company_name": current_user.get("company_name"),
+            "business_address": current_user.get("business_address"),
+            "tax_id": current_user.get("tax_id")
+        })
+    return result
