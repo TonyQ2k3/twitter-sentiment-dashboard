@@ -8,6 +8,7 @@ import {
 } from "chart.js";
 import TopComments from "../components/TopComments";
 import SentimentTrendChart from "./SentimentTrendChart";
+import Bookmark from "../assets/Bookmark";
 import { getToken, authFetch } from "../auth";
 
 
@@ -17,7 +18,7 @@ export default function SentimentDashboard() {
   const [product, setProduct] = useState(null);
   const [data, setData] = useState(
     {
-      "product": "Your Product",
+      "product": "Example Product",
       "total": 31,
       "positive": 8,
       "neutral": 17,
@@ -110,7 +111,7 @@ export default function SentimentDashboard() {
     setTrackLoading(true);
     try {
       const endpoint = isTracked ? '/api/sentiment/untrack-product' : '/api/sentiment/track-product';
-      const res = await authFetch(`${endpoint}?sproduct=${encodeURIComponent(product)}`, {
+      const res = await authFetch(`${endpoint}?product=${encodeURIComponent(product)}`, {
         method: 'POST',
       });
       
@@ -194,24 +195,16 @@ export default function SentimentDashboard() {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{data.product}</h2>
-          {product && (
+          {data.product !== "Example Product" && (
             <button
               onClick={toggleTracking}
-              className={`p-2 rounded-full transition-all duration-200 ${
-                isTracked
-                  ? "bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800"
-                  : "bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800"
-              }`}
-              title={isTracked ? "Remove from tracking" : "Add to tracking"}
+              className={`p-2 rounded-full transition-all duration-200`}
+              title={isTracked ? "Remove product from tracking list" : "Add product to tracking list"}
             >
               {isTracked ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
+                <Bookmark filled={true} />
               ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-                </svg>
+                <Bookmark filled={false} />
               )}
             </button>
           )}

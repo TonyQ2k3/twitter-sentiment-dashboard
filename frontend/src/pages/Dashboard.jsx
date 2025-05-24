@@ -57,7 +57,7 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100">
+    <main className="min-h-screen dark:bg-gray-800">
       {/* Header */}
       <Header username={username} email={email} role={role} handleLogout={handleLogout} />
 
