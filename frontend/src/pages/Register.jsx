@@ -36,18 +36,28 @@ export default function Register() {
     }
     
     try {
-      const userData = { 
-        email,
-        username, 
-        password,
-        role,
-        ...(role === "enterprise" && { 
-          companyName, 
-          businessAddress, 
-          taxId 
-        })
-      };
+      let userData;
+      if (role === "enterprise") {
+        userData = { 
+          email,
+          username, 
+          password,
+          role,
+          company_name: companyName, 
+          business_address: businessAddress, 
+          tax_id: taxId 
+        };
+      } 
+      else {
+        userData = { 
+          email, 
+          username, 
+          password, 
+          role 
+        };
+      }
       
+      console.log(userData);
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

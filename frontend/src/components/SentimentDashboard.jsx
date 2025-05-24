@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,7 +14,7 @@ import { getToken, authFetch } from "../auth";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function SentimentDashboard() {
-  const [product, setProduct] = useState("");
+  const [product, setProduct] = useState(null);
   const [data, setData] = useState(
     {
       "product": "Your Product",
@@ -31,8 +31,14 @@ export default function SentimentDashboard() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [activeTab, setActiveTab] = useState("sentiment");
 
+  // Track list feature
+  const [isTracked, setIsTracked] = useState(false);
+  const [trackLoading, setTrackLoading] = useState(false);
+
+
   const token = getToken();
 
+  // Function to search product
   const handleSearch = async () => {
     if (!product) return;
     setLoading(true);
@@ -70,6 +76,53 @@ export default function SentimentDashboard() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to fetch tracked products
+  const fetchTrackedProducts = async () => {
+    try {
+      const res = await authFetch('/api/sentiment/tracked-products');
+      if (!res.ok) 
+        throw new Error("Failed to fetch tracked products");
+      const data = await res.json();
+      
+      // If we have a product, check if it's tracked
+      if (product) {
+        setIsTracked(data.tracked_products.includes(product));
+      }
+      
+      return data.tracked_products;
+    } catch (err) {
+      console.error("Error fetching tracked products:", err);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    fetchTrackedProducts();
+  });
+
+  // Toggle tracking status function
+  const toggleTracking = async () => {
+    if (!product) return;
+    
+    setTrackLoading(true);
+    try {
+      const endpoint = isTracked ? '/api/sentiment/untrack-product' : '/api/sentiment/track-product';
+      const res = await authFetch(`${endpoint}?sproduct=${encodeURIComponent(product)}`, {
+        method: 'POST',
+      });
+      
+      if (!res.ok) throw new Error(`Failed to ${isTracked ? 'untrack' : 'track'} product`);
+      
+      // Toggle the tracking status
+      setIsTracked(!isTracked);
+    } catch (err) {
+      console.error("Error toggling tracking status:", err);
+      setError(`Failed to ${isTracked ? 'remove from' : 'add to'} tracking list`);
+    } finally {
+      setTrackLoading(false);
     }
   };
 
@@ -139,7 +192,31 @@ export default function SentimentDashboard() {
     {/* Header - always visible regardless of tab */}
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-700 p-6 transition-all duration-300">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{data.product}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{data.product}</h2>
+          {product && (
+            <button
+              onClick={toggleTracking}
+              className={`p-2 rounded-full transition-all duration-200 ${
+                isTracked
+                  ? "bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800"
+                  : "bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800"
+              }`}
+              title={isTracked ? "Remove from tracking" : "Add to tracking"}
+            >
+              {isTracked ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
+
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
             <input
