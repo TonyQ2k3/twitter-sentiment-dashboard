@@ -19,5 +19,6 @@ class EnterpriseUserCreate(UserBase):
     company_name: str
     business_address: str
     tax_id: str
+    tracked_products: list[str] = Field(default_factory=list)
 
 UserCreate = Union[NormalUserCreate, EnterpriseUserCreate]

@@ -23,7 +23,8 @@ def register(user: UserCreate = Body(...)):
         user_doc.update({
             "company_name": user.company_name,
             "business_address": user.business_address,
-            "tax_id": user.tax_id
+            "tax_id": user.tax_id,
+            "tracked_products": []
         })
 
     db_users.insert_one(user_doc)
