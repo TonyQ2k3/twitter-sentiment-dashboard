@@ -21,9 +21,9 @@ def register(user: UserCreate = Body(...)):
 
     if user.role == "enterprise":
         user_doc.update({
-            "company_name": user.companyName,
-            "business_address": user.businessAddress,
-            "tax_id": user.taxId
+            "company_name": user.company_name,
+            "business_address": user.business_address,
+            "tax_id": user.tax_id
         })
 
     db_users.insert_one(user_doc)

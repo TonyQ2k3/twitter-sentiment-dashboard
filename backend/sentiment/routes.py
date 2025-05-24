@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Query, Depends
 from fastapi.responses import JSONResponse
-from database import db_summaries, db_reddits
+from database import db_summaries, db_reddits, db_users
 from sentiment.models import SentimentSummary
 from sentiment.utils import get_existing_sentiments, get_new_sentiments, capitalize_product_name
-from auth.utils import get_current_user
+from auth.utils import get_current_user, require_enterprise
 from bson.son import SON
 
 router = APIRouter()
 
 
+# Fetch sentiment summary for a product
 @router.get("/summary", response_model=SentimentSummary)
 def get_sentiment_summary(
     product: str = Query(..., min_length=1),
@@ -32,7 +33,8 @@ def get_sentiment_summary(
                 irrelevant=0,
             )
             
-            
+
+# Fetch most popular comments for a product
 @router.get("/top-comments")
 def get_top_comments(
     product: str = Query(..., min_length=1), 
@@ -48,6 +50,7 @@ def get_top_comments(
     return JSONResponse(content=comments)
 
 
+# Aggreggate weekly sentiment data
 @router.get("/weekly")
 def get_weekly_sentiment(
     product: str = Query(..., min_length=1),
@@ -107,6 +110,7 @@ def get_weekly_sentiment(
     return JSONResponse(content=output)
 
 
+# Aggreggate monthly sentiment data
 @router.get("/monthly")
 def get_monthly_sentiment(
     product: str = Query(..., min_length=1), 
@@ -162,3 +166,30 @@ def get_monthly_sentiment(
             data[entry["sentiment"]] = entry["count"]
         output.append(data)
     return JSONResponse(content=output)
+
+
+# Add a new tracked product to the user's list
+@router.post("/track-product")
+def add_tracked_product(product: str = Query(...), user=Depends(require_enterprise)):
+    if product not in user["tracked_products"]:
+        db_users.update_one(
+            {"email": user["email"]},
+            {"$addToSet": {"tracked_products": product}}
+        )
+    return {"msg": f"Tracking {product}"}
+
+
+# Remove a tracked product from the user's list
+@router.post("/untrack-product")
+def untrack_product(product: str = Query(...), user=Depends(require_enterprise)):
+    db_users.update_one(
+        {"email": user["email"]},
+        {"$pull": {"tracked_products": product}}
+    )
+    return {"msg": f"Stopped tracking '{product}'"}
+
+
+# Fetch all tracked products for the user
+@router.get("/tracked-products")
+def get_tracked_products(user=Depends(require_enterprise)):
+    return {"tracked_products": user.get("tracked_products", [])}
