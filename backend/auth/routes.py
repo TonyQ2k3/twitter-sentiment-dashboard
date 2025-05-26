@@ -51,6 +51,7 @@ def read_users_me(current_user: dict = Depends(get_current_user)):
         result.update({
             "company_name": current_user.get("company_name"),
             "business_address": current_user.get("business_address"),
-            "tax_id": current_user.get("tax_id")
+            "tax_id": current_user.get("tax_id"),
+            "tracked_products": current_user.get("tracked_products", [])
         })
     return result

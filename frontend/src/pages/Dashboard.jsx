@@ -137,7 +137,7 @@ export default function Dashboard() {
     };
     fetchUser();
     fetchTrackedProducts();
-  });
+  }, []);
 
   // Toggle tracking status function
   const toggleTracking = async () => {
@@ -186,12 +186,12 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen dark:bg-gray-800">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       {/* Header */}
       <Header username={username} email={email} role={role} handleLogout={handleLogout} />
 
       {/* Dashboard */}
-      <div className="flex flex-col md:flex-row gap-6 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6 min-h-screen transition-colors duration-300">
+      <div className="flex flex-col md:flex-row gap-6 p-6">
         {/* Sidebar */}
         <aside className="w-full md:w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-700 p-5 h-fit transition-all duration-300 hover:shadow-xl">
           <div className="mb-6 text-center">
