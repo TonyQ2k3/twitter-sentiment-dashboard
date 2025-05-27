@@ -7,10 +7,6 @@ export default function Header({username, email, role, handleLogout}) {
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const navigate = useNavigate();
 
-    const handleProfile = () => {
-        navigate('/profile');
-    }
-
     return (
         <header className="relative bg-white dark:bg-gray-800 shadow-md rounded-lg mb-2">
         {/* Main header content */}
