@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Body
-from auth.models import UserCreate, UserLogin
+from auth.models import UserCreate, UserLogin, UserProfileUpdate, ChangePasswordRequest
 from auth.utils import hash_password, verify_password, create_access_token, get_current_user
 from database import db_users
 from datetime import timedelta
@@ -55,3 +55,31 @@ def read_users_me(current_user: dict = Depends(get_current_user)):
             "tracked_products": current_user.get("tracked_products", [])
         })
     return result
+
+
+# Edit user profile
+@router.put("/me")
+def update_profile(
+    updates: UserProfileUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    update_fields = {k: v for k, v in updates.dict().items() if v is not None}
+    if not update_fields:
+        raise HTTPException(status_code=400, detail="No valid fields to update")
+    
+    db_users.update_one({"email": current_user["email"]}, {"$set": update_fields})
+    return {"msg": "Profile updated successfully"}
+
+
+# Change password
+@router.post("/change-password")
+def change_password(
+    payload: ChangePasswordRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    if not verify_password(payload.old_password, current_user["hashed_password"]):
+        raise HTTPException(status_code=401, detail="Old password is incorrect")
+    
+    new_hashed = hash_password(payload.new_password)
+    db_users.update_one({"email": current_user["email"]}, {"$set": {"hashed_password": new_hashed}})
+    return {"msg": "Password changed successfully"}

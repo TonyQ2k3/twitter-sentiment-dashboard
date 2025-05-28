@@ -6,6 +6,17 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [editFormData, setEditFormData] = useState({});
+  const [passwordFormData, setPasswordFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   // Check for dark mode
@@ -32,6 +43,7 @@ export default function UserProfile() {
         const res = await authFetch("/api/auth/me");
         const data = await res.json();
         setUserData(data);
+        setEditFormData(data); // Initialize edit form with current data
         setError(null);
       } 
       catch (err) {
@@ -44,15 +56,170 @@ export default function UserProfile() {
     };
     
     fetchUserData();
-  }, []);
+  }, [navigate]);
+
+  // Form input change handlers
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePasswordFormChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Validate edit profile form
+  const validateEditForm = () => {
+    const errors = {};
+    
+    if (!editFormData.username?.trim()) {
+      errors.username = 'Username is required';
+    }
+    
+    if (userData.role === 'enterprise') {
+      if (!editFormData.company_name?.trim()) {
+        errors.company_name = 'Company name is required';
+      }
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Validate password form
+  const validatePasswordForm = () => {
+    const errors = {};
+    
+    if (!passwordFormData.currentPassword) {
+      errors.currentPassword = 'Current password is required';
+    }
+    
+    if (!passwordFormData.newPassword) {
+      errors.newPassword = 'New password is required';
+    } else if (passwordFormData.newPassword.length < 8) {
+      errors.newPassword = 'Password must be at least 8 characters';
+    }
+    
+    if (passwordFormData.newPassword !== passwordFormData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Submit edit profile form
+  const handleSubmitEditProfile = async (e) => {
+    e.preventDefault();
+    
+    if (!validateEditForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setSuccessMessage('');
+    
+    try {
+      const res = await authFetch("/api/auth/me", {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editFormData)
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to update profile');
+      }
+      
+      const updatedData = await res.json();
+      setUserData(updatedData);
+      setSuccessMessage('Profile updated successfully');
+      
+      // Close modal after 2 seconds
+      setTimeout(() => {
+        setShowEditProfile(false);
+        setSuccessMessage('');
+      }, 2000);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      setFormErrors({ submit: err.message || 'Failed to update profile. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Submit change password form
+  const handleSubmitChangePassword = async (e) => {
+    e.preventDefault();
+    
+    if (!validatePasswordForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setSuccessMessage('');
+    
+    try {
+      const res = await authFetch("/api/auth/change-password", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          old_password: passwordFormData.currentPassword,
+          new_password: passwordFormData.newPassword
+        })
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to change password');
+      }
+      
+      const data = await res.json();
+      setSuccessMessage(data.message || 'Password changed successfully');
+      
+      // Reset form and close modal after 2 seconds
+      setTimeout(() => {
+        setPasswordFormData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        setShowChangePassword(false);
+        setSuccessMessage('');
+      }, 2000);
+    } catch (err) {
+      console.error('Error changing password:', err);
+      setFormErrors({ submit: err.message || 'Failed to change password. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Button click handlers
   const handleEditProfile = () => {
-    alert('Edit profile functionality would open here.');
+    setFormErrors({});
+    setSuccessMessage('');
+    setShowEditProfile(true);
   };
 
   const handleChangePassword = () => {
-    alert('Change password functionality would open here.');
+    setFormErrors({});
+    setSuccessMessage('');
+    setPasswordFormData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setShowChangePassword(true);
   };
 
   const handleReturnHome = () => {
@@ -274,6 +441,260 @@ export default function UserProfile() {
               ))}
             </div>
           )}
+        </div>
+      )}
+      
+      {/* Edit Profile Modal */}
+      {showEditProfile && (
+        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            {/* Background overlay */}
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => !isSubmitting && setShowEditProfile(false)}></div>
+            
+            {/* Modal panel */}
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <form onSubmit={handleSubmitEditProfile}>
+                <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
+                        Edit Profile
+                      </h3>
+                      
+                      {successMessage && (
+                        <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-md">
+                          <p className="text-green-700 dark:text-green-300 text-sm">{successMessage}</p>
+                        </div>
+                      )}
+                      
+                      {formErrors.submit && (
+                        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md">
+                          <p className="text-red-700 dark:text-red-300 text-sm">{formErrors.submit}</p>
+                        </div>
+                      )}
+                      
+                      <div className="mt-4 space-y-4">
+                        <div>
+                          <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Username
+                          </label>
+                          <input
+                            type="text"
+                            name="username"
+                            id="username"
+                            value={editFormData.username || ''}
+                            onChange={handleEditFormChange}
+                            className="profile-updater-input"
+                            disabled={isSubmitting}
+                          />
+                          {formErrors.username && (
+                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.username}</p>
+                          )}
+                        </div>
+                        
+                        {isEnterprise && (
+                          <>
+                            <div>
+                              <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Company Name
+                              </label>
+                              <input
+                                type="text"
+                                name="company_name"
+                                id="company_name"
+                                value={editFormData.company_name || ''}
+                                onChange={handleEditFormChange}
+                                className="profile-updater-input"
+                                disabled={isSubmitting}
+                              />
+                              {formErrors.company_name && (
+                                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.company_name}</p>
+                              )}
+                            </div>
+                            
+                            <div>
+                              <label htmlFor="business_address" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Business Address
+                              </label>
+                              <textarea
+                                name="business_address"
+                                id="business_address"
+                                rows="3"
+                                value={editFormData.business_address || ''}
+                                onChange={handleEditFormChange}
+                                className="profile-updater-input"
+                                disabled={isSubmitting}
+                              ></textarea>
+                            </div>
+                            
+                            <div>
+                              <label htmlFor="tax_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Tax ID
+                              </label>
+                              <input
+                                type="text"
+                                name="tax_id"
+                                id="tax_id"
+                                value={editFormData.tax_id || ''}
+                                onChange={handleEditFormChange}
+                                className="profile-updater-input"
+                                disabled={isSubmitting}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="submit"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-400 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Saving...
+                      </>
+                    ) : 'Save Changes'}
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                    onClick={() => setShowEditProfile(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            {/* Background overlay */}
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => !isSubmitting && setShowChangePassword(false)}></div>
+            
+            {/* Modal panel */}
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <form onSubmit={handleSubmitChangePassword}>
+                <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
+                        Change Password
+                      </h3>
+                      
+                      {successMessage && (
+                        <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-md">
+                          <p className="text-green-700 dark:text-green-300 text-sm">{successMessage}</p>
+                        </div>
+                      )}
+                      
+                      {formErrors.submit && (
+                        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md">
+                          <p className="text-red-700 dark:text-red-300 text-sm">{formErrors.submit}</p>
+                        </div>
+                      )}
+                      
+                      <div className="mt-4 space-y-4">
+                        <div>
+                          <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Current Password
+                          </label>
+                          <input
+                            type="password"
+                            name="currentPassword"
+                            id="currentPassword"
+                            value={passwordFormData.currentPassword}
+                            onChange={handlePasswordFormChange}
+                            className="profile-updater-input"
+                            disabled={isSubmitting}
+                          />
+                          {formErrors.currentPassword && (
+                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.currentPassword}</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            New Password
+                          </label>
+                          <input
+                            type="password"
+                            name="newPassword"
+                            id="newPassword"
+                            value={passwordFormData.newPassword}
+                            onChange={handlePasswordFormChange}
+                            className="profile-updater-input"
+                            disabled={isSubmitting}
+                          />
+                          {formErrors.newPassword && (
+                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.newPassword}</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Confirm New Password
+                          </label>
+                          <input
+                            type="password"
+                            name="confirmPassword"
+                            id="confirmPassword"
+                            value={passwordFormData.confirmPassword}
+                            onChange={handlePasswordFormChange}
+                            className="profile-updater-input"
+                            disabled={isSubmitting}
+                          />
+                          {formErrors.confirmPassword && (
+                            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{formErrors.confirmPassword}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="submit"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-400 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Changing...
+                      </>
+                    ) : 'Change Password'}
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                    onClick={() => setShowChangePassword(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
       

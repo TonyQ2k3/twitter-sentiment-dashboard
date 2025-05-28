@@ -22,3 +22,13 @@ class EnterpriseUserCreate(UserBase):
     tracked_products: list[str] = Field(default_factory=list)
 
 UserCreate = Union[NormalUserCreate, EnterpriseUserCreate]
+
+class UserProfileUpdate(BaseModel):
+    username: Optional[str] = None
+    company_name: Optional[str] = None
+    business_address: Optional[str] = None
+    tax_id: Optional[str] = None
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str

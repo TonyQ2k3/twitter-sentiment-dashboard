@@ -62,3 +62,13 @@ code {
     dark:text-gray-400 
     mb-1;
 }
+
+.profile-updater-label {
+  @apply 
+    block text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+
+.profile-updater-input {
+  @apply 
+    mt-1 p-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white text-base;
+}
