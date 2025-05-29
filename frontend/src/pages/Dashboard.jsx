@@ -42,7 +42,6 @@ export default function Dashboard() {
   // Track list feature
   const [trackedProducts, setTrackedProducts] = useState([]);
   const [isTracked, setIsTracked] = useState(false);
-  const [trackLoading, setTrackLoading] = useState(false);
   const navigate = useNavigate();
 
   const token = getToken();
@@ -114,7 +113,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      navigate("/login");
+      navigate("/about");
     }
     if (username !== "") {
       return;
@@ -125,7 +124,7 @@ export default function Dashboard() {
         const data = await res.json();
         setUsername(data.username);
         setEmail(data.email);
-        if (data.role == "enterprise") {
+        if (data.role === "enterprise") {
           setRole("Enterprise")
         }
         else {
@@ -142,8 +141,6 @@ export default function Dashboard() {
   // Toggle tracking status function
   const toggleTracking = async () => {
     if (!product) return;
-    
-    setTrackLoading(true);
     try {
       const endpoint = isTracked ? '/api/sentiment/untrack-product' : '/api/sentiment/track-product';
       const res = await authFetch(`${endpoint}?product=${encodeURIComponent(product)}`, {
@@ -157,8 +154,6 @@ export default function Dashboard() {
     } catch (err) {
       console.error("Error toggling tracking status:", err);
       setError(`Failed to ${isTracked ? 'remove from' : 'add to'} tracking list`);
-    } finally {
-      setTrackLoading(false);
     }
   };
 

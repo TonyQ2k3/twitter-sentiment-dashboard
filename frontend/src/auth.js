@@ -28,7 +28,7 @@ export async function authFetch(url, options = {}) {
 
   if (res.status === 401) {
     clearToken();
-    window.location.href = "/login";
+    window.location.href = "/about";
     return Promise.reject(new Error("Unauthorized - token expired or invalid"));
   }
 
