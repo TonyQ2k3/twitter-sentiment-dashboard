@@ -222,6 +222,8 @@ export default function Dashboard() {
                 Sentiment Trends
               </div>
             </button>
+
+            {role === "Enterprise" && (
             <button 
               className={`block w-full text-left px-4 py-3 rounded-xl transition-all duration-200 ${
                 activeTab === "tracked" 
@@ -236,6 +238,7 @@ export default function Dashboard() {
                 Tracked Products
               </div>
             </button>
+            )}
           </nav>
         </aside>
       
@@ -315,7 +318,7 @@ export default function Dashboard() {
                   {/* Pie Chart and Top Comments Section */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
-                      <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Sentiment Distribution</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">Sentiment Distribution</h3>
                       <div className="p-2">
                         <Pie data={chartData} />
                       </div>

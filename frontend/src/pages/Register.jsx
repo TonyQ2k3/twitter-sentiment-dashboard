@@ -127,7 +127,7 @@ export default function Register() {
                   onChange={() => setRole("enterprise")}
                   className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                 />
-                <span className="ml-2 font-medium text-gray-800 dark:text-gray-200">Business Account</span>
+                <span className="ml-2 font-medium text-gray-800 dark:text-gray-200">Enterprise Account</span>
               </div>
               <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 pl-6">
                 For companies and organizations. Includes advanced business features.
