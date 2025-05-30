@@ -3,7 +3,7 @@
 export default function Bookmark({ filled = false }) {
     if (filled) {
         return (
-            <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path 
                 d="M6.5 3C5.67 3 5 3.67 5 4.5v15.5l7-3.5 7 3.5V4.5c0-.83-.67-1.5-1.5-1.5h-11z" 
                 fill="url(#bookmark-gradient)" 
@@ -18,7 +18,7 @@ export default function Bookmark({ filled = false }) {
         )
     }
     return (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path 
             strokeLinecap="round" 
             strokeLinejoin="round" 
