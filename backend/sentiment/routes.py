@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from database import db_reddits, db_users, premium_db
 from sentiment.models import SentimentSummary
 from sentiment.utils import get_new_sentiments, capitalize_product_name
 from auth.utils import get_current_user, require_enterprise
 from bson.son import SON
+import requests
 import os
 
 router = APIRouter()
@@ -198,9 +199,10 @@ def get_tracked_products(user=Depends(require_enterprise)):
 def submit_analysis(
     product: str = Query(...),
     time_filter: str = Query(...),  # "week", "month", "year"
-    requester: str = Depends(require_enterprise)
+    requester = Depends(require_enterprise)
 ):
-    exclusive_db = premium_db[f"reddits_{requester["_id"]}"]
+    premium_id = f"reddits_{requester["_id"]}"
+    exclusive_db = premium_db[premium_id]
     # Validate time_filter choice
     if time_filter not in ["week", "month", "year"]:
         raise HTTPException(status_code=400, detail="Invalid time_filter")
@@ -229,7 +231,7 @@ def submit_analysis(
     # Trigger the crawl
     try:
         res = requests.post(f"{CRAWL_API}/crawl", json={
-            "requester_id": requester,
+            "requester_id": str(requester["_id"]),
             "keyword": product,
             "subreddits": ["technology", "gadgets"],
             "limit": 30,

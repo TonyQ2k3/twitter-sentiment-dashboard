@@ -4,3 +4,4 @@ pymongo==4.12.1
 passlib==1.7.4
 python-jose==3.4.0
 bcrypt==4.3.0
+requests==2.32.3
