@@ -12,3 +12,32 @@ This is the repo for the dashboard web app which visualizes sentiment analysis r
 This repo structure is as follows:
 + `frontend`: The UI of the dashboard, built using ReactJS and ChartJS
 + `backend`: Exposes an API that accesss the databases, aggregates the data and returns result to the front-end
+
+## Installation
+
+### For the front-end
+```bash
+cd frontend
+
+npm install
+
+npm start
+```
+
+### For the backend
+Create .env inside the /backend folder
+```
+MONGO_URI=yourmongouri
+```
+Then run the server
+```bash
+cd backend
+
+python -m venv venv                 # Create a venv
+
+venv/Scripts/activate               # Activate venv
+
+pip install -r requirements.txt     # Install dependencies
+
+fastapi dev main.py                 # Start FastAPI server (local only)
+```

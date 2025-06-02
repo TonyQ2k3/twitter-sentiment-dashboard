@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {logo} from '../assets';
+import { clearToken } from "../auth";
 
 
-export default function Header({username, email, role, handleLogout}) {
+export default function Header({ username, email, role }) {
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        clearToken();
+        navigate("/login");
+    };
 
     return (
         <header className="relative bg-white dark:bg-gray-800 shadow-md rounded-lg mb-2">

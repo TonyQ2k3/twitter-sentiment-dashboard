@@ -14,6 +14,7 @@ import TopComments from "../components/TopComments";
 import SentimentTrendChart from "../components/SentimentTrendChart";
 import SentimentPieChart from "../components/SentimentPieChart";
 import TrackedProductsPanel from "../components/TrackedProductsPanel";
+import OnDemandCrawl from "../components/OnDemandCrawl";
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -237,14 +238,28 @@ export default function Dashboard() {
                 </svg>
                 Tracked Products
               </div>
-            </button>
-            )}
+            </button>)}
+            {role === "Enterprise" && (
+            <button 
+              className={`block w-full text-left px-4 py-3 rounded-xl transition-all duration-200 ${
+                activeTab === "onDemand" 
+                  ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-800/30 dark:to-purple-800/30 text-indigo-700 dark:text-indigo-300 font-semibold shadow-sm" 
+                  : "hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+              }`}
+              onClick={() => setActiveTab("onDemand")}>
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
+                </svg>
+                Request a product
+              </div>
+            </button>)}
           </nav>
         </aside>
       
         {/* Main Panel */}
         <div className="flex-1 space-y-6">
-          {activeTab !== "tracked" ? (
+          {activeTab === "sentiment" || activeTab === "weekly" ? (
             <>
               {/* Header - always visible regardless of tab */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-700 p-6 transition-all duration-300">
@@ -337,8 +352,10 @@ export default function Dashboard() {
                 </div>
               )}
             </>
-          ) : (
+          ) : activeTab === "tracked" ? (
             <TrackedProductsPanel tracked={trackedProducts} onProductClick={onProductClick}  />
+          ) : (
+            <OnDemandCrawl />
           )}
         </div>
       </div>
