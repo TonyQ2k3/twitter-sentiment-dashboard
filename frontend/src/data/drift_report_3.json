@@ -1,0 +1,209 @@
+{
+  "metrics": [
+    {
+      "id": "354024afcabd84862cc31aba415aedc9",
+      "metric_id": "Accuracy()",
+      "value": 0.7444231994901211
+    },
+    {
+      "id": "3c2d79a01c4f6539c105bc7dff803faa",
+      "metric_id": "Precision(conf_matrix=True,pr_curve=False,pr_table=False)",
+      "value": 0.6999658224303382
+    },
+    {
+      "id": "11c1894b301e560af740a01ee9739c2a",
+      "metric_id": "Recall(conf_matrix=True,pr_curve=False,pr_table=False)",
+      "value": 0.7741302723400304
+    },
+    {
+      "id": "2df7cb543daa4f42d1d5cdad5bb551ae",
+      "metric_id": "F1Score(conf_matrix=True)",
+      "value": 0.720591983469232
+    },
+    {
+      "id": "960da7cc5ae6dfee13853a0b222466ca",
+      "metric_id": "F1ByLabel()",
+      "value": {
+        "0.Negative": 0.6986899563318777,
+        "1.Positive": 0.7990543735224587,
+        "2.Neutral": 0.6640316205533597
+      }
+    },
+    {
+      "id": "57f465d9f518c33f7672e42e807a1737",
+      "metric_id": "PrecisionByLabel()",
+      "value": {
+        "0.Negative": 0.5970149253731343,
+        "1.Positive": 0.922237380627558,
+        "2.Neutral": 0.5806451612903226
+      }
+    },
+    {
+      "id": "66b666a06110f2e57883b2a7365fcf45",
+      "metric_id": "RecallByLabel()",
+      "value": {
+        "0.Negative": 0.8421052631578947,
+        "1.Positive": 0.7049009384775808,
+        "2.Neutral": 0.7753846153846153
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "ge",
+      "name": "Accuracy metric: Greater or Equal Reference ± 0.085",
+      "description": "Accuracy metric: Actual value 0.744 < 0.855 ± 0.085",
+      "metric_config": {
+        "metric_id": "354024afcabd84862cc31aba415aedc9",
+        "params": {
+          "type": "evidently:metric_v2:Accuracy",
+          "tests": [
+            {
+              "type": "evidently:test_v2:GreaterOrEqualMetricTest",
+              "is_critical": true,
+              "threshold": {
+                "relative": 0.1,
+                "absolute": null
+              }
+            }
+          ],
+          "probas_threshold": null,
+          "k": null
+        }
+      },
+      "test_config": {
+        "type": "evidently:test_v2:GreaterOrEqualMetricTest",
+        "is_critical": true,
+        "threshold": {
+          "relative": 0.1,
+          "absolute": null
+        }
+      },
+      "status": "FAIL",
+      "bound_test": {
+        "type": "evidently:bound_test:SingleValueBoundTest",
+        "test": {
+          "type": "evidently:test_v2:GreaterOrEqualMetricTest",
+          "is_critical": true,
+          "threshold": {
+            "relative": 0.1,
+            "absolute": null
+          }
+        },
+        "metric_fingerprint": "354024afcabd84862cc31aba415aedc9"
+      }
+    },
+    {
+      "id": "eq",
+      "name": "Precision metric: Equal Reference ± 0.171",
+      "description": "Precision metric: Actual value 0.700 ",
+      "metric_config": {
+        "metric_id": "3c2d79a01c4f6539c105bc7dff803faa",
+        "params": {
+          "type": "evidently:metric_v2:Precision",
+          "tests": null,
+          "probas_threshold": null,
+          "k": null,
+          "conf_matrix": true,
+          "pr_curve": false,
+          "pr_table": false
+        }
+      },
+      "test_config": {
+        "type": "evidently:test_v2:EqualMetricTest",
+        "is_critical": true,
+        "expected": {
+          "relative": 0.2,
+          "absolute": null
+        }
+      },
+      "status": "SUCCESS",
+      "bound_test": {
+        "type": "evidently:bound_test:SingleValueBoundTest",
+        "test": {
+          "type": "evidently:test_v2:EqualMetricTest",
+          "is_critical": true,
+          "expected": {
+            "relative": 0.2,
+            "absolute": null
+          }
+        },
+        "metric_fingerprint": "3c2d79a01c4f6539c105bc7dff803faa"
+      }
+    },
+    {
+      "id": "eq",
+      "name": "Recall metric: Equal Reference ± 0.171",
+      "description": "Recall metric: Actual value 0.774 ",
+      "metric_config": {
+        "metric_id": "11c1894b301e560af740a01ee9739c2a",
+        "params": {
+          "type": "evidently:metric_v2:Recall",
+          "tests": null,
+          "probas_threshold": null,
+          "k": null,
+          "conf_matrix": true,
+          "pr_curve": false,
+          "pr_table": false
+        }
+      },
+      "test_config": {
+        "type": "evidently:test_v2:EqualMetricTest",
+        "is_critical": true,
+        "expected": {
+          "relative": 0.2,
+          "absolute": null
+        }
+      },
+      "status": "SUCCESS",
+      "bound_test": {
+        "type": "evidently:bound_test:SingleValueBoundTest",
+        "test": {
+          "type": "evidently:test_v2:EqualMetricTest",
+          "is_critical": true,
+          "expected": {
+            "relative": 0.2,
+            "absolute": null
+          }
+        },
+        "metric_fingerprint": "11c1894b301e560af740a01ee9739c2a"
+      }
+    },
+    {
+      "id": "eq",
+      "name": "F1 score metric: Equal Reference ± 0.171",
+      "description": "F1 score metric: Actual value 0.721 ",
+      "metric_config": {
+        "metric_id": "2df7cb543daa4f42d1d5cdad5bb551ae",
+        "params": {
+          "type": "evidently:metric_v2:F1Score",
+          "tests": null,
+          "probas_threshold": null,
+          "k": null,
+          "conf_matrix": true
+        }
+      },
+      "test_config": {
+        "type": "evidently:test_v2:EqualMetricTest",
+        "is_critical": true,
+        "expected": {
+          "relative": 0.2,
+          "absolute": null
+        }
+      },
+      "status": "SUCCESS",
+      "bound_test": {
+        "type": "evidently:bound_test:SingleValueBoundTest",
+        "test": {
+          "type": "evidently:test_v2:EqualMetricTest",
+          "is_critical": true,
+          "expected": {
+            "relative": 0.2,
+            "absolute": null
+          }
+        },
+        "metric_fingerprint": "2df7cb543daa4f42d1d5cdad5bb551ae"
+      }
+    }
+  ]
+}
