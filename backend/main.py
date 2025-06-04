@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from auth.routes import router as auth_router
 from sentiment.routes import router as sentiment_router
+from monitor.routes import router as monitor_router
 
 app = FastAPI()
 
@@ -17,3 +18,4 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(sentiment_router, prefix="/sentiment", tags=["Sentiment"])
+app.include_router(monitor_router, prefix="/monitor", tags=["Monitor"])

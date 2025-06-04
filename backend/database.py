@@ -17,6 +17,9 @@ try:
     db_users = db["users"]
     db_reddits = db["reddits"]
     db_summaries = db["summaries"]
+
+    dbr = client["reports"]
+    db_reports = dbr["model_drift"]
     
     premium_db = client["premium"]
     print("Connected to MongoDB: ", MONGO_URI)
