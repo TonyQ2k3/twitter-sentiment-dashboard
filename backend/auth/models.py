@@ -5,7 +5,7 @@ class UserBase(BaseModel):
     email: str
     username: str
     password: str
-    role: Literal["normal", "enterprise"] = "normal"
+    role: Literal["normal", "enterprise", "admin"] = "normal"
 
 class UserLogin(BaseModel):
     email: str

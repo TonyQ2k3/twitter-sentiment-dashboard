@@ -48,7 +48,14 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def require_enterprise(current_user: dict = Depends(get_current_user)):
-    user = db_users.find_one({"email": current_user["email"]})
-    if user and user.get("role") == "enterprise":
+    user = current_user
+    if user and (user.get("role") == "enterprise" or user.get("role") == "admin"):
         return user
     raise HTTPException(status_code=403, detail="Enterprise access required")
+
+
+def require_admin(current_user: dict = Depends(get_current_user)):
+    user = current_user
+    if user and user.get("role") == "admin":
+        return user
+    raise HTTPException(status_code=403, detail="Admin access required")
