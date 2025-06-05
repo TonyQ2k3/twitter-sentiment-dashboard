@@ -19,7 +19,7 @@ try:
     db_summaries = db["summaries"]
 
     dbr = client["reports"]
-    db_reports = dbr["model_drift"]
+    db_model = dbr["model_drift"]
     
     premium_db = client["premium"]
     print("Connected to MongoDB: ", MONGO_URI)

@@ -308,35 +308,6 @@ export default function ModelDrift({ reportArray }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mb-6">
-            <button
-              onClick={handleReturnHome}
-              className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg shadow-sm transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Return to Dashboard
-            </button>
-          </div>
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              ML Model Evaluation Dashboard
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Performance metrics and test results analysis
-            </p>
-            <button
-              onClick={fetchData}
-              className="mt-4 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm"
-            >
-              Refresh Data
-            </button>
-          </div>
-        </div>
-
         {/* Report Selector */}
         <ReportSelector 
           reports={reports}

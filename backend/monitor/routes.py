@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from pymongo import MongoClient, DESCENDING
 from bson.son import SON
 from bson.json_util import dumps
-from database import db_reports
+from database import db_model
 from datetime import datetime
 from bson import ObjectId
 
@@ -16,10 +16,10 @@ def serialize_report(doc):
         doc["timestamp"] = doc["timestamp"].isoformat()
     return doc
 
-@router.get("/reports")
+@router.get("/model")
 def get_reports():
     try:
-        reports_cursor = db_reports.find().sort("timestamp", DESCENDING).limit(10)
+        reports_cursor = db_model.find().sort("timestamp", DESCENDING).limit(10)
         reports = [serialize_report(doc) for doc in reports_cursor]
         return reports
     except Exception as e:
