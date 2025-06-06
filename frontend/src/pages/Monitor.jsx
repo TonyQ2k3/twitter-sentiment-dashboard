@@ -54,20 +54,20 @@ const Sidebar = ({ selectedPanel, onPanelSelect }) => {
       )
     },
     { 
-      id: 'alerts', 
-      name: 'Alerts',
-      icon: (
-        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-        </svg>
-      )
-    },
-    { 
       id: 'dataset-summary', 
       name: 'Dataset Summary',
       icon: (
         <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      )
+    },
+    { 
+      id: 'alerts', 
+      name: 'Alerts',
+      icon: (
+        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
         </svg>
       )
     }
@@ -133,29 +133,29 @@ export default function Monitor() {
       const modelDriftsArray = await resModel.json();
       setModelDrifts(modelDriftsArray);
 
-      // // Load dataset drift reports from the API
-      // const resDataset = await fetch('/api/monitor/dataset');
-      // if (!resDataset.ok) {
-      //   throw new Error(`HTTP error! status: ${resDataset.status}`);
-      // }
-      // const datasetDriftsArray = await resDataset.json();
-      // setDatasetDrifts(datasetDriftsArray);
+      // Load dataset drift reports from the API
+      const resDataset = await fetch('/api/monitor/dataset-drift');
+      if (!resDataset.ok) {
+        throw new Error(`HTTP error! status: ${resDataset.status}`);
+      }
+      const datasetDriftsArray = await resDataset.json();
+      setDatasetDrifts(datasetDriftsArray);
 
-      // // Load alerts from the API
-      // const resAlerts = await fetch('/api/monitor/alerts');
-      // if (!resAlerts.ok) {
-      //   throw new Error(`HTTP error! status: ${resAlerts.status}`);
-      // }
-      // const alertsArray = await resAlerts.json();
-      // setAlerts(alertsArray);
+      // Load alerts from the API
+      const resAlerts = await fetch('/api/monitor/alerts');
+      if (!resAlerts.ok) {
+        throw new Error(`HTTP error! status: ${resAlerts.status}`);
+      }
+      const alertsArray = await resAlerts.json();
+      setAlerts(alertsArray);
 
-      // // Load summaries from the API
-      // const resSummaries = await fetch('/api/monitor/summaries');
-      // if (!resSummaries.ok) {
-      //   throw new Error(`HTTP error! status: ${resSummaries.status}`);
-      // }
-      // const summariesArray = await resSummaries.json();
-      // setSummaries(summariesArray);
+      // Load summaries from the API
+      const resSummaries = await fetch('/api/monitor/dataset-summary');
+      if (!resSummaries.ok) {
+        throw new Error(`HTTP error! status: ${resSummaries.status}`);
+      }
+      const summariesArray = await resSummaries.json();
+      setSummaries(summariesArray);
 
     } catch (err) {
       setError(err.message || 'Failed to fetch data');
