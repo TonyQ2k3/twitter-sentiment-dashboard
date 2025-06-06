@@ -18,8 +18,12 @@ try:
     db_reddits = db["reddits"]
     db_summaries = db["summaries"]
 
+    # Model monitoring database
     dbr = client["reports"]
     db_model = dbr["model_drift"]
+    db_datadrift = dbr["data_drift"]
+    db_alert = dbr["alerts"]
+    db_datasummary = dbr["dataset_summary"]
     
     premium_db = client["premium"]
     print("Connected to MongoDB: ", MONGO_URI)
