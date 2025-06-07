@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Query, Depends, HTTPException
-from fastapi.responses import JSONResponse
-from pymongo import MongoClient, DESCENDING
-from bson.son import SON
-from bson.json_util import dumps
+from pymongo import DESCENDING
 from database import db_model, db_datadrift, db_alert, db_datasummary
 from datetime import datetime
-from bson import ObjectId
+from auth.utils import require_admin
 
 router = APIRouter()
 
@@ -17,7 +14,7 @@ def serialize_report(doc):
     return doc
 
 @router.get("/model")
-def get_reports():
+def get_reports(admin = Depends(require_admin)):
     try:
         reports_cursor = db_model.find().sort("timestamp", DESCENDING).limit(10)
         reports = [serialize_report(doc) for doc in reports_cursor]
@@ -27,7 +24,7 @@ def get_reports():
     
     
 @router.get("/dataset-drift")
-def get_datadrift():
+def get_datadrift(admin = Depends(require_admin)):
     try:
         reports_cursor = db_datadrift.find().sort("timestamp", DESCENDING).limit(10)
         reports = [serialize_report(doc) for doc in reports_cursor]
@@ -37,7 +34,7 @@ def get_datadrift():
     
 
 @router.get("/dataset-summary")
-def get_datasummary():
+def get_datasummary(admin = Depends(require_admin)):
     try:
         reports_cursor = db_datasummary.find().sort("timestamp", DESCENDING).limit(10)
         reports = [serialize_report(doc) for doc in reports_cursor]
@@ -47,7 +44,7 @@ def get_datasummary():
     
 
 @router.get("/alerts")
-def get_alerts():
+def get_alerts(admin = Depends(require_admin)):
     try:
         reports_cursor = db_alert.find().sort("timestamp", DESCENDING).limit(20)
         reports = [serialize_report(doc) for doc in reports_cursor]

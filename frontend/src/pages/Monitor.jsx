@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { isAuthenticated } from "../auth";
+import { authFetch } from "../auth";
 import { useNavigate } from "react-router-dom";
 import Chart from 'chart.js/auto';
 
@@ -126,7 +126,7 @@ export default function Monitor() {
       setError(null);
       
       // Load AI model drift reports from the API
-      const resModel = await fetch('/api/monitor/model');
+      const resModel = await authFetch('/api/monitor/model');
       if (!resModel.ok) {
         throw new Error(`HTTP error! status: ${resModel.status}`);
       }
@@ -134,7 +134,7 @@ export default function Monitor() {
       setModelDrifts(modelDriftsArray);
 
       // Load dataset drift reports from the API
-      const resDataset = await fetch('/api/monitor/dataset-drift');
+      const resDataset = await authFetch('/api/monitor/dataset-drift');
       if (!resDataset.ok) {
         throw new Error(`HTTP error! status: ${resDataset.status}`);
       }
@@ -142,7 +142,7 @@ export default function Monitor() {
       setDatasetDrifts(datasetDriftsArray);
 
       // Load alerts from the API
-      const resAlerts = await fetch('/api/monitor/alerts');
+      const resAlerts = await authFetch('/api/monitor/alerts');
       if (!resAlerts.ok) {
         throw new Error(`HTTP error! status: ${resAlerts.status}`);
       }
@@ -150,7 +150,7 @@ export default function Monitor() {
       setAlerts(alertsArray);
 
       // Load summaries from the API
-      const resSummaries = await fetch('/api/monitor/dataset-summary');
+      const resSummaries = await authFetch('/api/monitor/dataset-summary');
       if (!resSummaries.ok) {
         throw new Error(`HTTP error! status: ${resSummaries.status}`);
       }
