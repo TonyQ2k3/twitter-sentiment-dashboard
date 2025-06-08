@@ -10,8 +10,8 @@ This is the repo for the dashboard web app which visualizes sentiment analysis r
 
 ## 📁 Repository info
 This repo structure is as follows:
-+ `frontend`: The UI of the dashboard, built using ReactJS and ChartJS
-+ `backend`: Exposes an API that accesss the databases, aggregates the data and returns result to the front-end
++ `frontend`: Displays application UI
++ `backend`: Handles logic, data retrieval and data aggregation for the app
 
 ## Installation
 
