@@ -7,6 +7,11 @@ from auth.utils import get_current_user, require_enterprise
 from bson.son import SON
 import requests
 import os
+import json
+import re
+
+# Import redis
+from database import redis
 
 router = APIRouter()
 
@@ -19,8 +24,14 @@ def get_sentiment_summary(
     product: str = Query(..., min_length=1),
     current_user: str = Depends(get_current_user)
 ):
+    cache_key = f"summary:{product.lower()}"
+    cached = redis.get(cache_key)
+    if cached:
+        return SentimentSummary(**json.loads(cached))
+
     summary = get_new_sentiments(product)
     if summary:
+        redis.set(cache_key, json.dumps(summary.dict()), ex=3600)
         return summary
     else:
         return SentimentSummary(
@@ -55,6 +66,11 @@ def get_weekly_sentiment(
     product: str = Query(..., min_length=1),
     current_user: str = Depends(get_current_user)
 ):
+    cache_key = f"weekly:{product.lower()}"
+    cached = redis.get(cache_key)
+    if cached:
+        return JSONResponse(content=json.loads(cached))
+
     pipeline = [
         {"$match": {
             "product": {"$regex": f"^{product}$", "$options": "i"},
@@ -106,6 +122,8 @@ def get_weekly_sentiment(
         for entry in item["counts"]:
             data[entry["sentiment"]] = entry["count"]
         output.append(data)
+
+    redis.set(cache_key, json.dumps(output), ex=3600)
     return JSONResponse(content=output)
 
 
@@ -115,6 +133,11 @@ def get_monthly_sentiment(
     product: str = Query(..., min_length=1), 
     current_user: str = Depends(get_current_user)
 ):
+    cache_key = f"monthly:{product.lower()}"
+    cached = redis.get(cache_key)
+    if cached:
+        return JSONResponse(content=json.loads(cached))
+
     pipeline = [
         {"$match": {
             "product": {"$regex": f"^{product}$", "$options": "i"},
@@ -155,7 +178,6 @@ def get_monthly_sentiment(
         }},
         {"$sort": SON([("_id.year", 1), ("_id.month", 1)])}
     ]
-
     results = db_reddits.aggregate(pipeline)
     output = []
     for item in results:
@@ -164,6 +186,8 @@ def get_monthly_sentiment(
         for entry in item["counts"]:
             data[entry["sentiment"]] = entry["count"]
         output.append(data)
+
+    redis.set(cache_key, json.dumps(output), ex=3600) 
     return JSONResponse(content=output)
 
 
@@ -239,6 +263,15 @@ def submit_analysis(
         })
         if res.status_code != 200:
             raise HTTPException(status_code=500, detail="Crawl server failed")
+
+        # Normalize the product name for consistent cache key casing
+        normalized_product = product.lower()
+
+        # Remove stale cache entries
+        redis.delete(f"summary:{normalized_product}")
+        redis.delete(f"weekly:{normalized_product}")
+        redis.delete(f"monthly:{normalized_product}")
+
         return {"message": "Crawl triggered successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

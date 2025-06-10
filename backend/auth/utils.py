@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
-from database import db_users
+from database import db_users, redis
+from bson import json_util
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
@@ -40,10 +41,18 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     email = payload.get("sub")
     if email is None:
         raise HTTPException(status_code=401, detail="Invalid token payload")
+
+    cache_key = f"user:{email.lower()}"
+    cached = redis.get(cache_key)
+    if cached:
+        # print("Used cache")
+        return json_util.loads(cached)
     
+    # print("Calling DB")
     user = db_users.find_one({"email": email})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    redis.set(cache_key, json_util.dumps(user), ex=3600)
     return user
 
 
