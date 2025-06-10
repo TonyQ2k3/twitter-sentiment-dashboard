@@ -33,10 +33,6 @@ export default function UserProfile() {
 
   // Fetch user data from API
   useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-    }
-
     const fetchUserData = async () => {
       try {
         setLoading(true);

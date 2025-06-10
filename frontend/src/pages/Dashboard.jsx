@@ -113,9 +113,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/about");
-    }
     if (username !== "") {
       return;
     }
