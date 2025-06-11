@@ -12,7 +12,7 @@ This is the repo for the dashboard web app which visualizes sentiment analysis r
 This repo structure is as follows:
 + `frontend`: Displays application UI
 + `backend`: Handles logic, data retrieval and data aggregation for the app
-d
+
 ## Installation
 
 ### For the front-end
