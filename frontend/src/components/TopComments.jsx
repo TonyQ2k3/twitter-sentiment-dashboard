@@ -2,7 +2,7 @@ export default function TopComments({ comments }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center dark:text-gray-200">
       <h3 className="text-md font-semibold mb-2">Top Comments</h3>
-      <div className="max-h-[300px] overflow-y-auto pr-2 space-y-4">
+      <div className="overflow-y-auto pr-2 space-y-4">
         {comments.length === 0 ? (
           <p className="dark:text-gray-300">No comments found.</p>
         ) : (

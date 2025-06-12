@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { authFetch } from "../auth";
 import { useNavigate } from "react-router-dom";
-import Chart from 'chart.js/auto';
 
 import ModelDrift from '../components/monitor/ModelDrift';
 import DatasetDrift from '../components/monitor/DatasetDrift';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authFetch, clearToken, isAuthenticated, getToken } from "../auth";
+import { authFetch, clearToken, getToken } from "../auth";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -27,10 +27,10 @@ export default function Dashboard() {
   const [data, setData] = useState(
     {
       "product": "Example Product",
-      "total": 31,
-      "positive": 8,
-      "neutral": 17,
-      "negative": 6,
+      "total": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0,
     }
   );
   const [loading, setLoading] = useState(false);
@@ -125,8 +125,11 @@ export default function Dashboard() {
         if (data.role === "enterprise") {
           setRole("Enterprise")
         }
+        else if (data.role === "admin"){
+          setRole("Admin")
+        } 
         else {
-          setRole("User")
+          setRole("User");
         }
       } catch (err) {
         console.error("Failed to fetch user:", err);
@@ -221,7 +224,7 @@ export default function Dashboard() {
               </div>
             </button>
 
-            {role === "Enterprise" && (
+            {(role !== "User") && (
             <button 
               className={`block w-full text-left px-4 py-3 rounded-xl transition-all duration-200 ${
                 activeTab === "tracked" 
@@ -231,12 +234,12 @@ export default function Dashboard() {
               onClick={() => setActiveTab("tracked")}>
               <div className="flex items-center">
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"></path>
                 </svg>
                 Tracked Products
               </div>
             </button>)}
-            {role === "Enterprise" && (
+            {role !== "User" && (
             <button 
               className={`block w-full text-left px-4 py-3 rounded-xl transition-all duration-200 ${
                 activeTab === "onDemand" 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { authFetch, isAuthenticated } from "../auth";
+import { authFetch } from "../auth";
 
 export default function UserProfile() {
   const [loading, setLoading] = useState(true);
@@ -259,7 +259,7 @@ export default function UserProfile() {
   }
   
   // If we get here, we have data
-  const isEnterprise = userData.role === 'enterprise';
+  const isEnterprise = userData.role === 'enterprise' || userData.role === 'admin';
   const isAdmin = userData.role === 'admin';
   
   return (
