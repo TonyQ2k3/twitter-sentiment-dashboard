@@ -4,7 +4,6 @@ from sentiment.models import SentimentSummary
 from database import db_reddits
 
 
-
 def capitalize_product_name(product: str) -> str:
     # Capitalize the first letter of each word in the product name
     return ' '.join(word.capitalize() for word in product.split())

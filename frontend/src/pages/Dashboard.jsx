@@ -22,7 +22,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 export default function Dashboard() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("User");
   const [product, setProduct] = useState("");
   const [data, setData] = useState(
     {

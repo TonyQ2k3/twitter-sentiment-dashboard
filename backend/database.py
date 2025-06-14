@@ -21,7 +21,6 @@ try:
     db = client["main"]
     db_users = db["users"]
     db_reddits = db["reddits"]
-    db_summaries = db["summaries"]
 
     # Model monitoring database
     dbr = client["reports"]
