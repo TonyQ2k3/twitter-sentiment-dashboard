@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Body
 from auth.models import UserCreate, UserLogin, UserProfileUpdate, ChangePasswordRequest
 from auth.utils import hash_password, verify_password, create_access_token, get_current_user
-from database import db_users
+from database import db_users, redis
 from datetime import timedelta
 
 router = APIRouter()
@@ -38,6 +38,14 @@ def login(user: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_access_token({"sub": user.email}, expires_delta=timedelta(minutes=60))
     return {"access_token": token, "token_type": "bearer"}
+
+# Logout a user
+@router.post("/logout")
+def logout(current_user: dict = Depends(get_current_user)):
+    cache_key = f"user:{current_user['email'].lower()}"
+    # Assuming redis is set up to handle cache
+    redis.delete(cache_key)
+    return {"message": "User logged out successfully"}
 
 
 @router.get("/me")

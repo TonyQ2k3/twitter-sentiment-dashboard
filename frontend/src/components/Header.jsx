@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {logo} from '../assets';
-import { clearToken } from "../auth";
+import { authFetch, clearToken } from "../auth";
 
 
 export default function Header({ username, email, role }) {
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        // Clear cache or any other user data if necessary
+        const res = await authFetch("/api/auth/logout", {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+        });
         clearToken();
         navigate("/login");
     };
