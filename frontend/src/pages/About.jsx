@@ -154,7 +154,7 @@ export default function About() {
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Data Collection</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              We continuously crawl Reddit to collect real-time conversations about products and brands across thousands of communities.
+              We continuously crawl Reddit to collect real conversations about products and brands across thousands of communities.
             </p>
           </div>
           

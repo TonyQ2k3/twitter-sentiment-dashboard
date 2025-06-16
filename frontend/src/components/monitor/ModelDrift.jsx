@@ -130,7 +130,7 @@ const PerLabelChart = ({ data }) => {
             },
             title: {
               display: true,
-              text: 'Per-Label Metrics Comparison',
+              text: 'Classification Quality by Label',
               color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#374151'
             }
           },
