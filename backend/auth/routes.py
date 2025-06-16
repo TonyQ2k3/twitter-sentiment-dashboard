@@ -43,7 +43,6 @@ def login(user: UserLogin):
 @router.post("/logout")
 def logout(current_user: dict = Depends(get_current_user)):
     cache_key = f"user:{current_user['email'].lower()}"
-    # Assuming redis is set up to handle cache
     redis.delete(cache_key)
     return {"message": "User logged out successfully"}
 
@@ -76,6 +75,8 @@ def update_profile(
         raise HTTPException(status_code=400, detail="No valid fields to update")
     
     db_users.update_one({"email": current_user["email"]}, {"$set": update_fields})
+    cache_key = f"user:{current_user['email'].lower()}"
+    redis.delete(cache_key)
     return {"msg": "Profile updated successfully"}
 
 
@@ -90,4 +91,6 @@ def change_password(
     
     new_hashed = hash_password(payload.new_password)
     db_users.update_one({"email": current_user["email"]}, {"$set": {"hashed_password": new_hashed}})
+    cache_key = f"user:{current_user['email'].lower()}"
+    redis.delete(cache_key)
     return {"msg": "Password changed successfully"}

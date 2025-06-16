@@ -199,6 +199,7 @@ def add_tracked_product(product: str = Query(...), user=Depends(require_enterpri
             {"email": user["email"]},
             {"$addToSet": {"tracked_products": product}}
         )
+        redis.delete(f"user:{user['email'].lower()}")
     return {"msg": f"Tracking {product}"}
 
 
@@ -209,6 +210,7 @@ def untrack_product(product: str = Query(...), user=Depends(require_enterprise))
         {"email": user["email"]},
         {"$pull": {"tracked_products": product}}
     )
+    redis.delete(f"user:{user['email'].lower()}")
     return {"msg": f"Stopped tracking '{product}'"}
 
 
