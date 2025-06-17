@@ -28,6 +28,8 @@ npm start
 Create .env inside the /backend folder
 ```
 MONGO_URI=yourmongouri
+REDIS_HOST=yourredishost
+REDIS_PASSWORD=password
 ```
 Then run the server
 ```bash
