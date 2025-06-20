@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from database import db_reddits, db_users, premium_db
+from database import db_reddits, db_users, db
 from sentiment.models import SentimentSummary
 from sentiment.utils import get_new_sentiments, capitalize_product_name
 from auth.utils import get_current_user, require_enterprise
@@ -29,7 +29,8 @@ def get_sentiment_summary(
     if cached:
         return SentimentSummary(**json.loads(cached))
 
-    summary = get_new_sentiments(product)
+    user_id = f"reddits_{current_user["_id"]}"
+    summary = get_new_sentiments(product, user_id)
     if summary:
         redis.set(cache_key, json.dumps(summary.dict()), ex=3600)
         return summary
@@ -228,7 +229,7 @@ def submit_analysis(
     requester = Depends(require_enterprise)
 ):
     premium_id = f"reddits_{requester["_id"]}"
-    exclusive_db = premium_db[premium_id]
+    exclusive_db = db[premium_id]
     # Validate time_filter choice
     if time_filter not in ["week", "month", "year"]:
         raise HTTPException(status_code=400, detail="Invalid time_filter")

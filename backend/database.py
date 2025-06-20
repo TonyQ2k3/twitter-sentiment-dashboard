@@ -29,7 +29,6 @@ try:
     db_alert = dbr["alerts"]
     db_datasummary = dbr["dataset_summary"]
     
-    premium_db = client["premium"]
     print("Connected to MongoDB: ", client)
 
     # Connect to Redis (use environment variable or secrets for password)
