@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from database import db_reddits, db_users, db
 from sentiment.models import SentimentSummary
-from sentiment.utils import get_new_sentiments, capitalize_product_name
+from sentiment.utils import get_new_sentiments, capitalize_product_name, get_comments
 from auth.utils import get_current_user, require_enterprise
 from bson.son import SON
 import requests
@@ -51,13 +51,9 @@ def get_top_comments(
     product: str = Query(..., min_length=1), 
     limit: int = 10,
     current_user: str = Depends(get_current_user)
-):
-    cursor = db_reddits.find(
-        {"product": {"$regex": f"^{product}$", "$options": "i"}},
-        {"_id": 0, "text": 1, "author": 1, "score": 1, "created": 1, "prediction": 1}
-    ).sort("score", -1).limit(limit)
-    
-    comments = list(cursor)
+):    
+    user_id = f"reddits_{current_user['_id']}"
+    comments = get_comments(product, user_id, limit)
     return JSONResponse(content=comments)
 
 
@@ -278,3 +274,16 @@ def submit_analysis(
         return {"message": "Crawl triggered successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Refresh and remove cache
+@router.post("/refresh-cache")
+def refresh_cache(
+    product: str = Query(..., min_length=1)
+):
+    normalized_product = product.lower()
+    redis.delete(f"summary:{normalized_product}")
+    redis.delete(f"weekly:{normalized_product}")
+    redis.delete(f"monthly:{normalized_product}")
+    print(f"Cache for '{product}' refreshed successfully")
+    return {"message": f"Cache for '{product}' refreshed successfully"}

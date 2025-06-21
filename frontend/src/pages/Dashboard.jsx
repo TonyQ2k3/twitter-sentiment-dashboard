@@ -112,6 +112,16 @@ export default function Dashboard() {
     }
   };
 
+  // Function to refresh and delete old cache
+  const refreshCache = async () => {
+    const res = await fetch(`/api/sentiment/refresh-cache?product=${encodeURIComponent(product)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
   useEffect(() => {
     if (username !== "") {
       return;
@@ -162,6 +172,10 @@ export default function Dashboard() {
     setProduct(productName);
     handleSearch(productName);
     setActiveTab("sentiment");
+  }
+
+  const onRefresh = () => {
+    refreshCache();
   }
 
   const chartData = data && {
@@ -307,6 +321,15 @@ export default function Dashboard() {
                           Searching...
                         </div>
                       ) : "Search"}
+                    </button>
+                    <button 
+                      class="refresh-btn inline-flex items-center justify-center w-12 h-12 bg-primary hover:bg-purple-700 text-white rounded-full transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      aria-label="Refresh content"
+                      onClick={onRefresh}
+                    >
+                      <svg class="refresh-icon w-6 h-6 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                      </svg>
                     </button>
                   </div>
                 </div>
