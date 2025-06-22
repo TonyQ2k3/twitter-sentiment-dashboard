@@ -55,6 +55,6 @@ def get_comments(product: str, user_id: str, limit=10):
     if not comments:
         comments = query_comments(db_private, product)
         if not comments:
-            return None  # Không có dữ liệu ở cả 2 nơi
+            return []
 
     return comments

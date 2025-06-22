@@ -112,6 +112,8 @@ def get_weekly_sentiment(
         {"$sort": SON([("_id.year", 1), ("_id.month", 1), ("_id.week", 1)])}
     ]
     results = db_reddits.aggregate(pipeline)
+    private_db = db[f"reddits_{current_user['_id']}"]
+    results_2 = private_db.aggregate(pipeline)
     output = []
     for item in results:
         week_label = f"{item['_id']['year']}-{item['_id']['month']}-W{item['_id']['week']%4+1}"
@@ -119,7 +121,14 @@ def get_weekly_sentiment(
         for entry in item["counts"]:
             data[entry["sentiment"]] = entry["count"]
         output.append(data)
-
+    
+    for item in results_2:
+        week_label = f"{item['_id']['year']}-{item['_id']['month']}-W{item['_id']['week']%4+1}"
+        data = {"week": week_label, "Positive": 0, "Neutral": 0, "Negative": 0}
+        for entry in item["counts"]:
+            data[entry["sentiment"]] = entry["count"]
+        output.append(data)          
+    
     redis.set(cache_key, json.dumps(output), ex=3600)
     return JSONResponse(content=output)
 
@@ -175,9 +184,20 @@ def get_monthly_sentiment(
         }},
         {"$sort": SON([("_id.year", 1), ("_id.month", 1)])}
     ]
+    
     results = db_reddits.aggregate(pipeline)
+    private_db = db[f"reddits_{current_user['_id']}"]
+    results_2 = private_db.aggregate(pipeline)
+    
     output = []
     for item in results:
+        month_label = f"{item['_id']['year']}-{item['_id']['month']:02}"
+        data = {"month": month_label, "Positive": 0, "Neutral": 0, "Negative": 0}
+        for entry in item["counts"]:
+            data[entry["sentiment"]] = entry["count"]
+        output.append(data)
+        
+    for item in results_2:
         month_label = f"{item['_id']['year']}-{item['_id']['month']:02}"
         data = {"month": month_label, "Positive": 0, "Neutral": 0, "Negative": 0}
         for entry in item["counts"]:
